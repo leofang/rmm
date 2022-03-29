@@ -17,7 +17,7 @@ import warnings
 from collections import defaultdict
 
 from cython.operator cimport dereference as deref
-from libc.stdint cimport int8_t, int64_t
+from libc.stdint cimport int8_t, int64_t, uintptr_t
 from libcpp cimport bool
 from libcpp.cast cimport dynamic_cast
 from libcpp.memory cimport make_shared, make_unique, shared_ptr, unique_ptr
@@ -167,6 +167,18 @@ cdef class DeviceMemoryResource:
 
     cdef device_memory_resource* get_mr(self):
         return self.c_obj.get()
+
+    def get_mr_ptr(self):
+        """
+        Gets the pointer address to the device memory resource.
+
+        Returns:
+            int: The pointer address as a Python int.
+
+        Note: It is the user's responsibility to ensure the memory resource
+            is kept alive when using the pointer.
+        """
+        return <uintptr_t>(self.get_mr())
 
 
 cdef class UpstreamResourceAdaptor(DeviceMemoryResource):
